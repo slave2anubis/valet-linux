@@ -15,6 +15,7 @@ class DnsMasq
     public $configPath;
     public $nmConfigPath;
     public $resolvedConfig;
+    public $dnsmasqServiceFile;
 
     /**
      * Create a new DnsMasq instance.
@@ -39,6 +40,7 @@ class DnsMasq
         $this->dnsmasqOpts  = '/etc/dnsmasq.d/options';
         $this->nmConfigPath = '/etc/NetworkManager/conf.d/valet.conf';
         $this->resolvedConfigPath = '/etc/systemd/resolved.conf';
+        $this->dnsmasqServiceFile = '/etc/systemd/system/dnsmasq.service';
     }
 
     /**
@@ -142,7 +144,15 @@ class DnsMasq
      */
     public function dnsmasqSetup()
     {
+
         $this->pm->ensureInstalled('dnsmasq');
+
+        //for Solus 4 we need to create the systemd service file since its missing!
+        if(!$this->files->exists($this->dnsmasqServiceFile)){
+            $this->files->putAsUser($this->dnsmasqServiceFile, $this->files->get(__DIR__.'/../stubs/dnsmasq.service'));
+        }
+        
+
         $this->sm->enable('dnsmasq');
 
         $this->files->ensureDirExists('/etc/NetworkManager/conf.d');
