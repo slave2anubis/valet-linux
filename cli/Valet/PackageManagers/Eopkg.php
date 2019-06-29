@@ -29,9 +29,9 @@ class Eopkg implements PackageManager
      */
     public function packages($package)
     {
-        $query = "eopkg list-installed {$package} | grep {$package} | sed 's_  _\\t_g' | sed 's_\\._\\t_g' | cut -f 1";
+        $query = "eopkg list-installed {$package} | grep {$package}";
         
-        return explode(PHP_EOL, $this->cli->run($query));
+        return explode(" ", $this->cli->run($query));
     }
 
     /**
